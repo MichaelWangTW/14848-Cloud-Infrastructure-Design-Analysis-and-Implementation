@@ -1,0 +1,4 @@
+From python:latest
+COPY . /usr/src/terminal
+WORKDIR /usr/src/terminal
+ENTRYPOINT ["python","terminal.py"]
