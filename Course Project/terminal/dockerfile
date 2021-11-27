@@ -1,4 +1,15 @@
-From python:latest
-COPY . /usr/src/terminal
-WORKDIR /usr/src/terminal
-ENTRYPOINT ["python","terminal.py"]
+FROM python:3.8
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip3 install -r requirements.txt
+COPY /app .
+ENV PORT 8880
+CMD ["python","app.py"]
+
+
+
+
+
