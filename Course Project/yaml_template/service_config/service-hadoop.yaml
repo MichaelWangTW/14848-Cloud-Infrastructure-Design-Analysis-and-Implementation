@@ -1,12 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-hadoop
+  name: hadoop-service
 spec:
   type: LoadBalancer
   ports:
-  - port: 9870
+  - name: external
+    port: 9870
     protocol: TCP
     targetPort: 9870
+  - name: hdfs
+    port: 9000
+    protocol: TCP
+    targetPort: 9000
   selector:
     app: hadoop-namenode
