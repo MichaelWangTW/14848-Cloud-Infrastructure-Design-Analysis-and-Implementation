@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terminal
+  labels:
+    app: terminal
+spec:
+  selector:
+    matchLabels:
+      app: terminal
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: terminal
+    spec:
+      containers:
+        - image: michaelwangtw/terminal
+          imagePullPolicy: Always
+          name: terminal
+          ports:
+            - containerPort: 8880
