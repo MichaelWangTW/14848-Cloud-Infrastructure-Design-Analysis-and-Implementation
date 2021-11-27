@@ -1,41 +1,86 @@
-### Pull the docker image from DuckerHub and create terminal program. Push to my own DockerHub
-1. Hadoop NameNode
-2. Hadoop DataNode
-3. Apache Spark
-4. Jupyter NoteBook
-5. SonarQube and SonarScanner
-6. Terminal
+## Pull the docker image from DuckerHub and create terminal program. Push to my own DockerHub
+1. Hadoop NameNode (https://hub.docker.com/repository/docker/michaelwangtw/hadoop-namenode)
+>ref: bde2020/hadoop-namenode
+2. Hadoop DataNode (https://hub.docker.com/repository/docker/michaelwangtw/hadoop-datanode)
+>ref: bde2020/hadoop-datanode
+3. Apache Spark (https://hub.docker.com/repository/docker/michaelwangtw/spark)
+>ref: bitnami/spark
+4. Jupyter NoteBook (https://hub.docker.com/repository/docker/michaelwangtw/jupyter-notebook)
+>ref: jupyter/base-notebook
+5. SonarQube and SonarScanner (https://hub.docker.com/repository/docker/michaelwangtw/sonarqube-scanner)
 
-### Following steps were done on GCP cloud shell
-1. Create new project on GCP, note down the project ID (mini-project-submit)
+## Instructions to run this ToolBox Application on GCP
 
-2. Pull all 5 docker images, tag them and push them to Google Container Registry, respectively 
-``` sh
-docker pull michaelwangtw/terminal
-docker tag michaelwangtw/terminal gcr.io/{your-project-id}/michaelwangtw/terminal:latest
-docker push gcr.io/{your-project-id}/michaelwangtw/terminal:latest
+### GCP configuration and Required file
+1. Download this repositories from Github to your local machine. Navigate to directory ``14848-Cloud-Infrastructure-Design-Analysis-and-Implementation/Course Project``. This directory contain terminal application and YAML template.
 
-docker pull michaelwangtw/hadoop
-docker tag michaelwangtw/hadoop gcr.io/{your-project-id}/michaelwangtw/hadoop:latest
-docker push gcr.io/{your-project-id}/michaelwangtw/hadoop:latest
+2. Create new project on GCP, note down the project ID (mini-project-submit)
 
-docker pull michaelwangtw/jupyter-notebook
-docker tag michaelwangtw/jupyter-notebook gcr.io/{your-project-id}/michaelwangtw/jupyter-notebook:latest
-docker push gcr.io/{your-project-id}/michaelwangtw/jupyter-notebook:latest
+3. Go to Cloud Storage and upload yaml template folder ``yaml_template``. This folder contains the yaml file for image deploy and Load Balancer. There should be two subfolder ``service_config`` and ``terminal_config``.
+![YAML file upload to Cloud Storage](./image/GCP%20Bucket%20yaml%20file.png)
 
-docker pull michaelwangtw/spark
-docker tag michaelwangtw/spark gcr.io/{your-project-id}/michaelwangtw/spark:latest
-docker push gcr.io/{your-project-id}/michaelwangtw/spark:latest
+4. Create New Kubernetes Cluster. Navigate to Kubernetes Engine and create new standord cluster. 
+![Create k8s engine](./image/new%20k8s%20engine.png)
 
-docker pull michaelwangtw/sonarqube
-docker tag michaelwangtw/sonarqube gcr.io/{your-project-id}/michaelwangtw/sonarqube:latest
-docker push gcr.io/{your-project-id}/michaelwangtw/sonarqube:latest
-```
+5. Wait until Kubernetes engine finished. Connect to Kubernetes cluster in cloud shell.
 
-3. Create new Kubernetes cluster on GCP via GUI
+6. In cloud shell, run ``gsutil ls`` to get the address of yaml template. Run ``gsutil cp -r {YAML template Address}`` to copy `` yaml_template`` folder to Kubernetes cluster.
+![Copy YAML template from Cloud Storage](./image/Copy%20yaml%20file.png)
 
-4. Go to Container Registry in GCP and deploy five docker image I mentioned above. This action can be done via GUI.
+## Deploy Service on GCP Kubernetes engine
+1. In the cloud shell of the Kubernetes cluster we created, navigate to directory ``service_config``
+  > The ``service_config`` folder contain the deploymeny YAML and Load Balancer Service YAML for Hadoop-datanode,Hadoop-namenode,Spark,Sonarqube,Jupyter Notebook.
+  
+2. Run ``kubectl apply -f .`` and all image should deploy and create load balancer for each service.
+![Apply service YAML](./image/apply_service.png)
 
-5. Go back to GKE cluster and check if pods are running
+3. Go back to Kubernetes Engine terminal and check if all load balancer has end point.
+![service endpoint](./image/service%20external%20IP.png)
+
+4. Click the endpoint for each service
+  > Hadoop
+  > ![Hadoop](./image/Hadoop%20screenshot.png)
+
+  > Spark
+  > ![Spark](./image/Spark%20screenshot.png)
+
+  > Jupyter Notebook
+  > ![Jupyter](./image/Jupyter%20Notebook%20screenshot.png)
+
+  > Sonar Qubue
+  > ![Sonar](./image/Sonar%20screenshot.png)
+
+Next we are going to deploy our terminal using these endpoint
+
+## Deploy Terminal on GCP Kubernetes engine
+1. On your local machine, go back to the directory ``14848-Cloud-Infrastructure-Design-Analysis-and-Implementation/Course Project``. Navigate to ``terminal`` folder. This folder contains the terminal application.
+
+2. Navigate to ``terminal/app/templates/index.html``. Copy each service's enpoint on GCP to ``index.html``.
+   For example: The endpoint for Hadoop service is 104.154.66.84:9870. Copy this address to "Your_Hadoop_EndPoint"
+![Endpoint Template](./image/endpoint.png)
+![Endpoint Finished](./image/Modify%20terminal%20app.png)
+
+We have finished add service endpoint to the terminal. The user are able to visit different service via terminal.
+
+3. To deploy on GKE, we need to build docker image for terminal application. 
+
+4. In your local machine terminal, navigate to ``14848-Cloud-Infrastructure-Design-Analysis-and-Implementation/Course Project/terminal``
+
+5. Execute ``docker build -t $DOCKER_USER_ID/terminal .``
+![docker build](./image/docker_build.png)
+
+6. Run ``docker push $DOCKER_USER_ID/terminal `` to your docker hub
+![docker push](./image/push%20terminal.png)
+
+7. Go back to your GKE cluster. In the cloud shell navigate to ``yaml_template/terminal_config``
+
+8. The folder contains two YAML file. One deploy terminal image and one create load balancer. Before apply YAML file, go to ``deployment-terminal.yaml`` and change the terminal docker image path to your own docker image path.
+
+9. Execute ``kubectl apply -f .`` under ``yaml_template/terminal_config``
+![apply terminal](./image/apply_terminal.png)
+
+10. Go back to GKE cluster, you should get the endpoint for terminal application. Click the endpoint and navigate to the service you want.
+![Terminal](./image/Terminal%20screenshot.png)
+
 
 
