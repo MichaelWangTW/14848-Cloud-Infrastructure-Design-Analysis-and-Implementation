@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonar
+  name: sonarqube
   labels:
-    app: sonar
+    app: sonarqube
 spec:
   selector:
     matchLabels:
-      app: sonar
+      app: sonarqube
   minReadySeconds: 15
   strategy:
     type: RollingUpdate
@@ -17,11 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        app: sonar
+        app: sonarqube
     spec:
       containers:
         - image: michaelwangtw/sonarqube-scanner
           imagePullPolicy: Always
-          name: spark
+          name: sonarqube
           ports:
             - containerPort: 9000
