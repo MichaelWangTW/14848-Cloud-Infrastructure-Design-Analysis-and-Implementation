@@ -32,7 +32,7 @@
   > The ``service_config`` folder contain the deploymeny YAML and Load Balancer Service YAML for Hadoop-datanode,Hadoop-namenode,Spark,Sonarqube,Jupyter Notebook.
   
 2. Run ``kubectl apply -f .`` and all image should deploy and create load balancer for each service.
-![Apply service YAML](./image/apply-cmd.png)
+![Apply service YAML](./image/apply-cmd.jpg)
 
 3. Go back to Kubernetes Engine terminal and check if all load balancer has end point.
 ![service endpoint](./image/apply-service.png)
