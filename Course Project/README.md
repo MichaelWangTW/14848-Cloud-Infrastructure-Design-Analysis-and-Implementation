@@ -1,5 +1,6 @@
 ## Code Walkthrough and Application Demo Video
-
+[Video](https://drive.google.com/file/d/1f-ZGbsX4u-uF5HOPUNGkoML2YGJOyfNh/view?usp=sharing
+)
 ## Pull the docker image from DuckerHub and create terminal program. Push to my own DockerHub
 1. Hadoop NameNode (https://hub.docker.com/repository/docker/michaelwangtw/hadoop-namenode)
 >ref: bde2020/hadoop-namenode
