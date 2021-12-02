@@ -1,3 +1,6 @@
+## Code Walkthrough and Application Demo Video
+[Video](https://drive.google.com/file/d/1f-ZGbsX4u-uF5HOPUNGkoML2YGJOyfNh/view?usp=sharing
+)
 ## Pull the docker image from DuckerHub and create terminal program. Push to my own DockerHub
 1. Hadoop NameNode (https://hub.docker.com/repository/docker/michaelwangtw/hadoop-namenode)
 >ref: bde2020/hadoop-namenode
@@ -16,7 +19,7 @@
 
 2. Create new project on GCP, note down the project ID (mini-project-submit)
 
-3. Go to Cloud Storage and upload yaml template folder ``yaml_template``. This folder contains the yaml file for image deploy and Load Balancer. There should be two subfolder ``service_config`` and ``terminal_config``.
+3. Go to Cloud Storage and upload yaml template folder ``yaml_template``. This folder contains the yaml file for docker image deployment and Load Balancer. There should be two subfolder called ``service_config`` and ``terminal_config``.
 ![YAML file upload to Cloud Storage](./image/GCP%20Bucket%20yaml%20file.png)
 
 4. Create New Kubernetes Cluster. Navigate to Kubernetes Engine and create new standord cluster. 
@@ -24,41 +27,43 @@
 
 5. Wait until Kubernetes engine finished. Connect to Kubernetes cluster in cloud shell.
 
-6. In cloud shell, run ``gsutil ls`` to get the address of yaml template. Run ``gsutil cp -r {YAML template Address}`` to copy `` yaml_template`` folder to Kubernetes cluster.
+6. In cloud shell, run ``gsutil ls`` to get the cloud storage address of yaml template. Run ``gsutil cp -r {YAML template Address} .`` to copy `` yaml_template`` folder to Kubernetes cluster.
 ![Copy YAML template from Cloud Storage](./image/Copy%20yaml%20file.png)
 
-## Deploy Service on GCP Kubernetes engine
+## Deploy Docker Image and Create Service on GKE
 1. In the cloud shell of the Kubernetes cluster we created, navigate to directory ``service_config``
   > The ``service_config`` folder contain the deploymeny YAML and Load Balancer Service YAML for Hadoop-datanode,Hadoop-namenode,Spark,Sonarqube,Jupyter Notebook.
   
-2. Run ``kubectl apply -f .`` and all image should deploy and create load balancer for each service.
-![Apply service YAML](./image/apply_service.png)
+2. Run ``kubectl apply -f .`` and all docker image should deploy and create load balancer for each service.
+![Apply service YAML](./image/apply-cmd.jpg)
 
 3. Go back to Kubernetes Engine terminal and check if all load balancer has end point.
-![service endpoint](./image/service%20external%20IP.png)
+![service endpoint](./image/apply-service.png)
 
 4. Click the endpoint for each service
-  > Hadoop
-  > ![Hadoop](./image/Hadoop%20screenshot.png)
+  > Hadoop-namenode
+  > ![namenode](./image/namenode.png)
+  > Hadoop-datanode
+  > ![datanode](./image/datandoe.png)
 
   > Spark
-  > ![Spark](./image/Spark%20screenshot.png)
+  > ![Spark](./image/Spark-screenshot.png)
 
   > Jupyter Notebook
-  > ![Jupyter](./image/Jupyter%20Notebook%20screenshot.png)
+  > ![Jupyter](./image/Jupyter-Notebook-Screenshot.png)
 
   > Sonar Qubue
-  > ![Sonar](./image/Sonar%20screenshot.png)
+  > ![Sonar](./image/Sonar-screenshot.png)
 
 Next we are going to deploy our terminal using these endpoint
 
-## Deploy Terminal on GCP Kubernetes engine
-1. On your local machine, go back to the directory ``14848-Cloud-Infrastructure-Design-Analysis-and-Implementation/Course Project``. Navigate to ``terminal`` folder. This folder contains the terminal application.
+## Deploy and Run Terminal on GKE
+1. On your local machine, Navigate to ``14848-Cloud-Infrastructure-Design-Analysis-and-Implementation/Course Project/terminal`` folder. This folder contains the terminal application.
 
 2. Navigate to ``terminal/app/templates/index.html``. Copy each service's enpoint on GCP to ``index.html``.
-   For example: The endpoint for Hadoop service is 104.154.66.84:9870. Copy this address to "Your_Hadoop_EndPoint"
-![Endpoint Template](./image/endpoint.png)
-![Endpoint Finished](./image/Modify%20terminal%20app.png)
+   For example: The endpoint for Hadoop service is 34.134.116.132:9870. Copy this address to "Your_Hadoop_EndPoint"
+![Endpoint Template](./image/endpoint_template.png)
+![Endpoint Finished](./image/endpoint.png)
 
 We have finished add service endpoint to the terminal. The user are able to visit different service via terminal.
 
@@ -74,13 +79,13 @@ We have finished add service endpoint to the terminal. The user are able to visi
 
 7. Go back to your GKE cluster. In the cloud shell navigate to ``yaml_template/terminal_config``
 
-8. The folder contains two YAML file. One deploy terminal image and one create load balancer. Before apply YAML file, go to ``deployment-terminal.yaml`` and change the terminal docker image path to your own docker image path.
+8. The folder contains two YAML file. One deploy terminal docker image and one create load balancer. Before apply YAML file, go to ``deployment-terminal.yaml`` and change the terminal docker image path to your own docker image path which you just created.
 
 9. Execute ``kubectl apply -f .`` under ``yaml_template/terminal_config``
 ![apply terminal](./image/apply_terminal.png)
 
 10. Go back to GKE cluster, you should get the endpoint for terminal application. Click the endpoint and navigate to the service you want.
-![Terminal](./image/Terminal%20screenshot.png)
+![Terminal](./image/terminal.gif)
 
 
 
